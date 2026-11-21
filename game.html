@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GroupQuest — Spot It!</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #090d18;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+.app {
+  width: 100%;
+  max-width: 490px;
+  background: #131b2d;
+  border: 1px solid #273653;
+  border-radius: 24px;
+  padding: 25px;
+  box-shadow: 0 20px 70px #0008;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo { font-size: 21px; font-weight: 800; }
+.logo span { color: #7b9cff; }
+.tag {
+  color: #9eafff;
+  background: #253052;
+  padding: 7px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+h1 { font-size: 29px; margin: 28px 0 8px; }
+.subtitle { color: #9caac3; font-size: 14px; }
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 25px 0;
+}
+.stat {
+  background: #1d2940;
+  border-radius: 14px;
+  padding: 14px 5px;
+  text-align: center;
+}
+.stat small {
+  display: block;
+  color: #8e9db8;
+  font-size: 11px;
+  margin-bottom: 7px;
+}
+.stat strong { font-size: 23px; }
+#timer { color: #79a5ff; }
+.progress {
+  height: 7px;
+  background: #293650;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 22px;
+}
+#bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg,#5e8dff,#9a7aff);
+  transition: width .2s;
+}
+.instruction {
+  text-align: center;
+  color: #b9c6dc;
+  margin-bottom: 17px;
+  font-size: 14px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5,1fr);
+  gap: 9px;
+}
+.cell {
+  aspect-ratio: 1;
+  border: 1px solid #344361;
+  border-radius: 13px;
+  background: #202d46;
+  color: #fff;
+  font-size: clamp(22px, 7vw, 32px);
+  font-weight: bold;
+  cursor: pointer;
+  transition: .12s;
+}
+.cell:hover { background: #344b75; transform: scale(1.04); }
+.cell.correct { background: #155c48; border-color: #36d6a0; }
+.cell.wrong { background: #652c3c; border-color: #ff637d; }
+button:disabled { cursor: default; }
+.footer {
+  display: flex;
+  justify-content: space-between;
+  color: #7789a9;
+  font-size: 12px;
+  margin-top: 22px;
+}
+.primary {
+  border: 0;
+  background: linear-gradient(110deg,#527eff,#9565ff);
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 16px;
+  border-radius: 13px;
+  width: 100%;
+  cursor: pointer;
+  margin-top: 20px;
+}
+.primary:hover { filter: brightness(1.15); }
+#overlay {
+  text-align: center;
+  padding: 22px 5px;
+}
+#overlay h2 { font-size: 27px; }
+#overlay p { color: #aab8d0; line-height: 1.6; }
+.hidden { display: none !important; }
+.result { font-size: 48px; margin: 20px 0; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo">🎮 GROUP<span>QUEST</span></div>
+    <div class="tag">SPOT IT! #001</div>
+  </div>
+
+  <div id="overlay">
+    <div class="result">⚡</div>
+    <h2 id="overlayTitle">Знайди відмінний символ!</h2>
+    <p id="overlayText">
+      У тебе є 60 секунд.<br>
+      Знаходь символ, який відрізняється від інших.<br>
+      Кожна правильна відповідь — 10 балів!
+    </p>
+    <button class="primary" id="startBtn">ПОЧАТИ ГРУ 🚀</button>
+  </div>
+
+  <div id="game" class="hidden">
+    <h1>Знайди відмінний!</h1>
+    <div class="subtitle">Будь швидшим за інших гравців.</div>
+
+    <div class="stats">
+      <div class="stat">
+        <small>БАЛИ</small>
+        <strong id="score">0</strong>
+      </div>
+      <div class="stat">
+        <small>ЧАС</small>
+        <strong id="timer">60</strong>
+      </div>
+      <div class="stat">
+        <small>КОМБО 🔥</small>
+        <strong id="combo">0</strong>
+      </div>
+    </div>
+
+    <div class="progress"><div id="bar"></div></div>
+    <div class="instruction">Знайди один символ, який відрізняється 👇</div>
+    <div class="grid" id="grid"></div>
+
+    <div class="footer">
+      <span>GROUPQUEST ARENA</span>
+      <span>PERSONAL RECORD: <b id="best">0</b></span>
+    </div>
+  </div>
+</div>
+
+<script>
+let score = 0;
+let combo = 0;
+let time = 60;
+let timerInterval;
+let running = false;
+let targetIndex = -1;
+let best = Number(localStorage.getItem("gq_best") || 0);
+
+const pairs = [
+  ["O", "0"],
+  ["B", "8"],
+  ["S", "5"],
+  ["I", "1"],
+  ["Z", "2"],
+  ["G", "6"]
+];
+
+const $ = id => document.getElementById(id);
+
+function updateStats() {
+  $("score").textContent = score;
+  $("combo").textContent = combo;
+  $("timer").textContent = time;
+  $("best").textContent = best;
+  $("bar").style.width = (time / 60 * 100) + "%";
+  $("timer").style.color = time <= 10 ? "#ff667d" : "#79a5ff";
+}
+
+function newRound() {
+  const pair = pairs[Math.floor(Math.random() * pairs.length)];
+  const normal = pair[0];
+  const different = pair[1];
+
+  targetIndex = Math.floor(Math.random() * 25);
+  const grid = $("grid");
+  grid.innerHTML = "";
+
+  for (let i = 0; i < 25; i++) {
+    const button = document.createElement("button");
+    button.className = "cell";
+    button.textContent = i === targetIndex ? different : normal;
+    button.setAttribute("aria-label", "Символ " + button.textContent);
+
+    button.addEventListener("click", () => {
+      if (!running) return;
+
+      if (i === targetIndex) {
+        score += 10;
+        combo++;
+        button.classList.add("correct");
+        if (score > best) {
+          best = score;
+          localStorage.setItem("gq_best", best);
+        }
+      } else {
+        combo = 0;
+        score = Math.max(0, score - 2);
+        button.classList.add("wrong");
+      }
+
+      updateStats();
+      newRound();
+    });
+
+    grid.appendChild(button);
+  }
+}
+
+function finishGame() {
+  running = false;
+  clearInterval(timerInterval);
+
+  $("game").classList.add("hidden");
+  $("overlay").classList.remove("hidden");
+  $("overlayTitle").textContent = "Час вийшов!";
+  $("overlayText").innerHTML =
+    "Твій результат: <b>" + score + " балів</b><br>" +
+    "Особистий рекорд: <b>" + best + "</b><br><br>" +
+    "Спробуй побити власний рекорд!";
+  $("startBtn").textContent = "ГРАТИ ЩЕ РАЗ 🔥";
+  $("startBtn").onclick = startGame;
+  $("startBtn").classList.remove("hidden");
+}
+
+function startGame() {
+  score = 0;
+  combo = 0;
+  time = 60;
+  running = true;
+
+  $("overlay").classList.add("hidden");
+  $("game").classList.remove("hidden");
+  updateStats();
+  newRound();
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    time--;
+    updateStats();
+    if (time <= 0) finishGame();
+  }, 1000);
+}
+
+$("best").textContent = best;
+$("startBtn").addEventListener("click", startGame);
+</script>
+</body>
+</html>
