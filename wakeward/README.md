@@ -14,7 +14,7 @@ python3 -m http.server 8000
 
 Open `http://localhost:8000/wakeward/`. No build step or runtime packages are required. On GitHub Pages, copy the entire `wakeward/` directory into the published source and serve `wakeward/index.html` over HTTPS. Keep the sibling module and asset paths intact.
 
-GroupQuest’s existing catalog loads static games in an iframe. A future entry can point to the game’s direct path. If the host continues to percent-encode each filename as one segment, resolve this new nested path separately in that integration. For a direct Telegram Mini App, configure the HTTPS game URL. A child on the same origin can use an available host bridge for haptics and Telegram sharing. The top-level Mini App additionally handles `ready`, `expand`, safe-area updates, fullscreen and deactivation. Browser visibility handling is independent of Telegram.
+GroupQuest’s `groupquest_app_v2_3.html` catalog opens `wakeward/index.html` in its same-origin game iframe. For a direct Telegram Mini App, configure the HTTPS game URL. A child on the same origin can use an available host bridge for haptics and Telegram sharing. The top-level Mini App additionally handles `ready`, `expand`, safe-area updates, fullscreen and deactivation. Browser visibility handling is independent of Telegram.
 
 The daily chart rolls over at 00:00 UTC. A challenge URL contains the UTC date, ruleset and optional move target. Every client can replay the same chart. Candidates pass an exact solver before presentation, with a solvable mirrored campaign chart as a bounded fallback. Keep ruleset `w1` stable to preserve existing links and saves. Live sharing uses the served HTTPS URL. Telegram’s share dialog, the browser share sheet and a copyable link are supported.
 
