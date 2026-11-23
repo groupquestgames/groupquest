@@ -131,7 +131,7 @@ button:disabled { cursor: default; }
 .hidden { display: none !important; }
 .result { font-size: 48px; margin: 20px 0; }
 </style>
-</head>
+<link rel="stylesheet" href="groupquest-ui/game-common.css"></head>
 <body>
 <div class="app">
   <div class="header">
@@ -187,7 +187,12 @@ let time = 60;
 let timerInterval;
 let running = false;
 let targetIndex = -1;
-let best = Number(localStorage.getItem("gq_best") || 0);
+let best = 0;
+let roundLocked = false;
+let feedbackTimer;
+let remaining = 60000;
+let lastTick = 0;
+try { best = Number(localStorage.getItem("gq_best")) || 0; } catch {}
 
 const pairs = [
   ["O", "0"],
@@ -214,7 +219,10 @@ function newRound() {
   const normal = pair[0];
   const different = pair[1];
 
-  targetIndex = Math.floor(Math.random() * 25);
+  const previous = targetIndex;
+  targetIndex = Math.floor(Math.random() * (previous < 0 ? 25 : 24));
+  if (previous >= 0 && targetIndex >= previous) targetIndex++;
+  roundLocked = false;
   const grid = $("grid");
   grid.innerHTML = "";
 
@@ -225,7 +233,8 @@ function newRound() {
     button.setAttribute("aria-label", "Символ " + button.textContent);
 
     button.addEventListener("click", () => {
-      if (!running) return;
+      if (!running || roundLocked || document.hidden) return;
+      roundLocked = true;
 
       if (i === targetIndex) {
         score += 10;
@@ -233,7 +242,7 @@ function newRound() {
         button.classList.add("correct");
         if (score > best) {
           best = score;
-          localStorage.setItem("gq_best", best);
+          try { localStorage.setItem("gq_best", best); } catch {}
         }
       } else {
         combo = 0;
@@ -242,7 +251,12 @@ function newRound() {
       }
 
       updateStats();
-      newRound();
+      const keyboard = button.matches(":focus-visible");
+      feedbackTimer = setTimeout(() => {
+        if (!running) return;
+        newRound();
+        if (keyboard) grid.children[i]?.focus({ preventScroll: true });
+      }, 110);
     });
 
     grid.appendChild(button);
@@ -251,6 +265,7 @@ function newRound() {
 
 function finishGame() {
   running = false;
+  clearTimeout(feedbackTimer);
   clearInterval(timerInterval);
 
   $("game").classList.add("hidden");
@@ -261,7 +276,6 @@ function finishGame() {
     "Особистий рекорд: <b>" + best + "</b><br><br>" +
     "Спробуй побити власний рекорд!";
   $("startBtn").textContent = "ГРАТИ ЩЕ РАЗ 🔥";
-  $("startBtn").onclick = startGame;
   $("startBtn").classList.remove("hidden");
 }
 
@@ -269,6 +283,9 @@ function startGame() {
   score = 0;
   combo = 0;
   time = 60;
+  remaining = 60000;
+  lastTick = performance.now();
+  targetIndex = -1;
   running = true;
 
   $("overlay").classList.add("hidden");
@@ -278,12 +295,32 @@ function startGame() {
 
   clearInterval(timerInterval);
   timerInterval = setInterval(() => {
-    time--;
-    updateStats();
-    if (time <= 0) finishGame();
-  }, 1000);
+    if (document.hidden) return;
+    const now = performance.now();
+    remaining = Math.max(0, remaining - (now - lastTick));
+    lastTick = now;
+    const nextTime = Math.ceil(remaining / 1000);
+    if (nextTime !== time) {
+      time = nextTime;
+      updateStats();
+    }
+    if (remaining === 0) finishGame();
+  }, 100);
 }
 
+document.addEventListener("visibilitychange", () => {
+  lastTick = performance.now();
+});
+$("grid").addEventListener("keydown", (event) => {
+  const steps = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -5, ArrowDown: 5 };
+  const step = steps[event.key];
+  if (!step) return;
+  const cells = Array.from($("grid").children);
+  const index = cells.indexOf(event.target);
+  if (index < 0) return;
+  event.preventDefault();
+  cells[(index + step + cells.length) % cells.length].focus({ preventScroll: true });
+});
 $("best").textContent = best;
 $("startBtn").addEventListener("click", startGame);
 </script>
