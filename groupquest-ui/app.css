@@ -106,7 +106,7 @@ h3 { font-size: 1rem; font-weight: 800; }
   min-height: 374px;
   border-radius: 23px;
   border: 1px solid #4f343e;
-  background: #170f2c url(art/pulse-cover.webp) right center / auto 100% no-repeat;
+  background: #20121c url(art/hero.webp) 58% center / cover no-repeat;
 }
 .hero::before {
   content: "";
@@ -284,7 +284,7 @@ dialog::backdrop { background: #09090cdf; }
   .topbar-inner { min-height: 64px; }
 }
 @media (max-width: 560px) {
-  .hero { min-height: 335px; border-radius: 16px; background-position: right center; }
+  .hero { min-height: 335px; border-radius: 16px; background-position: 61% center; }
   .hero::before { background: linear-gradient(90deg, #110d15f7, #120d16a8 52%, #130d161f 100%), linear-gradient(0deg, #120e17 0%, transparent 60%); }
   .hero h2 { font-size: clamp(3.45rem, 13.8vw, 5.1rem); }
   .hero-description { font-size: .9rem; max-width: 206px; }
