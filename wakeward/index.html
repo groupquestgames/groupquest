@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101b1b">
+  <meta name="description" content="Tow a lantern through treacherous waters in Wakeward, a tactical sailing puzzle.">
+  <title>Wakeward</title>
+  <link rel="icon" href="./assets/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./game.mjs"></script>
+</head>
+<body>
+  <svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-mark" viewBox="0 0 24 24"><path d="M12 2.2 21 12l-9 9.8L3 12zM12 6v12M8 13l4-7 4 7M8.5 15H15.5"/></symbol>
+    <symbol id="i-sail" viewBox="0 0 24 24"><path d="m12 3 7 12H5l7-12Zm-8 15 3 3h10l3-3M12 3v12"/></symbol>
+    <symbol id="i-daily" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="15" rx="2"/><path d="M8 3v6m8-6v6M4 11h16m-10 5h4"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><path d="m3 6 6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14m6-12v14"/></symbol>
+    <symbol id="i-log" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6m-6 4h6m-6 4h3"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zm12-.5a5 5 0 0 1 0 7m2-9.5a8 8 0 0 1 0 12"/></symbol>
+    <symbol id="i-muted" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zm12 1 5 5m0-5-5 5"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.7 6.3.8-4.6 4.5 1.1 6.3-5.5-3-5.5 3 1.1-6.3L3 9.5l6.3-.8z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14m6-14v14"/></symbol>
+    <symbol id="i-rewind" viewBox="0 0 24 24"><path d="M9 5 4 10l5 5m-5-5h10a5 5 0 0 1 0 10h-3"/></symbol>
+    <symbol id="i-restart" viewBox="0 0 24 24"><path d="M20 10a8 8 0 1 0 .2 4M20 5v5h-5"/></symbol>
+    <symbol id="i-hint" viewBox="0 0 24 24"><path d="M9 18h6m-5 3h4m-5-6c0-2-3-2.8-3-6a6 6 0 1 1 12 0c0 3.2-3 4-3 6z"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5.5" y="10" width="13" height="10" rx="2"/><path d="M8.5 10V7a3.5 3.5 0 0 1 7 0v3"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V3m-4 4 4-4 4 4m-9 5H5v8h14v-8h-2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+    <symbol id="i-dock" viewBox="0 0 24 24"><path d="M5 4v16h14V4M9 13l3 3 3-3"/></symbol>
+    <symbol id="i-buoy" viewBox="0 0 24 24"><path d="m12 3 7 9-7 9-7-9zm0 5v8m-3-4h6"/></symbol>
+    <symbol id="i-current" viewBox="0 0 24 24"><path d="m5 10 7-5 7 5m-14 6 7-5 7 5"/></symbol>
+    <symbol id="i-wake" viewBox="0 0 24 24"><path d="M3 8c3 0 4-2 7-2s3 2 6 2 4-2 5-2M3 13c3 0 4-2 7-2s3 2 6 2 4-2 5-2M3 18c3 0 4-2 7-2s3 2 6 2 4-2 5-2"/></symbol>
+    <symbol id="i-gate" viewBox="0 0 24 24"><path d="M5 4v16m14-16v16M5 8h14M5 12h14M5 16h14"/></symbol>
+    <symbol id="i-skiff" viewBox="0 0 24 24"><path d="M7 19 6 10l6-7 6 7-1 9zM10 11h4v4h-4z"/></symbol>
+    <symbol id="i-lantern" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 6V4h6v2m-3 3 2 3-2 3-2-3z"/></symbol>
+  </svg>
+  <div class="app" id="app">
+    <header class="top">
+      <button class="brand" type="button" data-action="home" data-label="home">
+        <svg class="ico"><use href="#i-mark"/></svg><span data-text="title"></span>
+      </button>
+      <div class="top-actions">
+        <button class="icon-button" id="audio-button" type="button" data-action="mute" data-label="sound"><svg class="ico"><use href="#i-sound"/></svg></button>
+        <button class="icon-button" type="button" data-action="settings" data-label="settings"><svg class="ico"><use href="#i-settings"/></svg></button>
+      </div>
+    </header>
+
+    <main id="home" class="home">
+      <div class="hero-art" aria-hidden="true"></div>
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 data-text="title"></h1>
+          <p class="tagline" data-text="tagline"></p>
+          <p class="intro" data-text="description"></p>
+        </div>
+        <div class="home-actions">
+          <button class="button primary" type="button" data-action="campaign"><svg class="ico"><use href="#i-sail"/></svg><span id="campaign-cta"></span></button>
+          <button class="button daily-button" type="button" data-action="daily"><svg class="ico"><use href="#i-daily"/></svg><span data-text="daily"></span><time id="home-date"></time></button>
+        </div>
+        <div class="links">
+          <button class="subtle" type="button" data-action="charts"><svg class="ico"><use href="#i-map"/></svg><span data-text="charts"></span></button>
+          <button class="subtle" type="button" data-action="log"><svg class="ico"><use href="#i-log"/></svg><span data-text="log"></span></button>
+        </div>
+      </div>
+      <footer class="home-stats">
+        <div><svg class="ico"><use href="#i-compass"/></svg><strong id="home-cleared">0 / 24</strong><span data-text="chartsCleared"></span></div>
+        <div><svg class="ico"><use href="#i-star"/></svg><strong id="home-stars">0</strong><span data-text="stars"></span></div>
+      </footer>
+    </main>
+
+    <main id="play" class="play" hidden>
+      <div class="play-layout">
+        <section class="course">
+          <header class="course-top">
+            <div><p class="eyebrow" id="chart-category"></p><h1 id="chart-title"></h1></div>
+            <button class="icon-button" type="button" data-action="pause" data-label="pause"><svg class="ico"><use href="#i-pause"/></svg></button>
+          </header>
+          <div class="meters" id="meters">
+            <div><span data-text="moves"></span><strong id="moves">0</strong></div>
+            <div><span data-text="buoys"></span><strong id="buoys"></strong></div>
+            <div><span data-text="target"></span><strong id="par"></strong></div>
+          </div>
+          <div class="chart-shell">
+            <canvas id="board" tabindex="0" data-label="boardLabel" aria-describedby="board-state"></canvas>
+            <span id="board-state" class="sr-only"></span>
+          </div>
+          <p class="notice" id="notice" role="status"></p>
+          <div class="controls">
+            <button type="button" class="button" data-action="undo"><svg class="ico"><use href="#i-rewind"/></svg><span data-text="undo"></span></button>
+            <button type="button" class="button" data-action="restart"><svg class="ico"><use href="#i-restart"/></svg><span data-text="restart"></span></button>
+            <button type="button" class="button" data-action="hint"><svg class="ico"><use href="#i-hint"/></svg><span data-text="hint"></span></button>
+          </div>
+        </section>
+        <aside class="course-notes">
+          <h2 data-text="route"></h2>
+          <p data-text="aim"></p>
+          <div id="legend"></div>
+          <p class="controls-note" data-text="steer"></p>
+        </aside>
+      </div>
+    </main>
+  </div>
+  <dialog id="sheet" aria-labelledby="sheet-title">
+    <div class="sheet-header">
+      <h2 id="sheet-title"></h2>
+      <button class="icon-button" type="button" data-action="close" data-label="close"><svg class="ico"><use href="#i-close"/></svg></button>
+    </div>
+    <div id="sheet-body"></div>
+  </dialog>
+  <audio id="score" src="./assets/harbor-at-dusk.mp3" preload="none" loop></audio>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <noscript>Wakeward needs JavaScript to play.</noscript>
+</body>
+</html>
