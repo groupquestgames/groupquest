@@ -1,7 +1,7 @@
 'use strict';
 
 const games = [
-  { id: 'pulse', title: 'Pulse Shift', category: 'action', file: 'groupquest_pulse_shift.html', art: 'pulse',
+  { id: 'pulse', title: 'Pulse Shift', category: 'action', file: 'groupquest_pulse_shift.html', cover: 'groupquest-ui/art/pulse-cover.webp',
     en: 'Dodge obstacles and collect energy in a fast reflex arcade.', uk: 'Ухиляйся від перешкод і збирай енергію в аркаді на реакцію.' },
   { id: 'orbit', title: 'Orbit Merge', category: 'puzzle', file: 'orbit_merge.html', art: 'orbit',
     en: 'Merge planets and make room for a higher score.', uk: 'Об’єднуй планети та звільняй місце для нового рекорду.' },

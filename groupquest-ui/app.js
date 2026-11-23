@@ -130,7 +130,8 @@ function syncFavoriteButtons() {
 
 function cover(game) {
   const src = game.cover ?? `groupquest-ui/art/${game.art}.webp`;
-  return `<img src="${src}" alt="" width="480" height="270" loading="lazy" decoding="async">`;
+  const square = game.id === 'pulse';
+  return `<img src="${src}" alt="" width="480" height="${square ? 480 : 270}"${square ? ' class="pulse-cover"' : ''} loading="lazy" decoding="async">`;
 }
 
 function playButton(game, label, style = 'secondary') {
@@ -140,7 +141,7 @@ function playButton(game, label, style = 'secondary') {
 // Card markup only uses the bundled catalog and translation strings.
 function card(game) {
   return `<article class="game-card">
-    <div class="game-art">
+    <div class="game-art${game.id === 'pulse' ? ' game-art-square' : ''}">
       ${cover(game)}
       <button type="button" class="icon-button card-save" data-fav="${game.id}">${icon('heart')}</button>
     </div>

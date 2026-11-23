@@ -106,7 +106,7 @@ h3 { font-size: 1rem; font-weight: 800; }
   min-height: 374px;
   border-radius: 23px;
   border: 1px solid #4f343e;
-  background: #20121c url(art/hero.webp) 58% center / cover no-repeat;
+  background: #170f2c url(art/pulse-cover.webp) right center / auto 100% no-repeat;
 }
 .hero::before {
   content: "";
@@ -166,6 +166,8 @@ progress::-moz-progress-bar { background: var(--accent); }
 .game-card { display: flex; flex-direction: column; min-width: 0; border: 1px solid var(--line); background: var(--surface); border-radius: 15px; overflow: hidden; transition: border-color .15s; }
 .game-art { position: relative; isolation: isolate; overflow: hidden; background: #28222d; aspect-ratio: 16/9; }
 .game-art img { width: 100%; height: 100%; }
+.game-art-square { aspect-ratio: 1; }
+.game-art-square .card-save { top: auto; bottom: 8px; }
 .card-save { position: absolute; right: 8px; top: 8px; border-color: #ffffff30; background: #121218e8; }
 .card-copy { display: flex; flex: 1; flex-direction: column; align-items: flex-start; padding: 14px; gap: 6px; min-width: 0; }
 .card-copy .overline { color: #d4a99f; font-size: .69rem; letter-spacing: .08em; overflow-wrap: anywhere; }
@@ -175,6 +177,7 @@ progress::-moz-progress-bar { background: var(--accent); }
 .compact-stack { display: grid; gap: 8px; }
 .compact-game { display: flex; align-items: center; gap: 12px; padding: 9px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; min-width: 0; }
 .compact-game img { width: 58px; height: 45px; border-radius: 7px; flex: none; }
+.compact-game .pulse-cover { width: 45px; }
 .compact-game > div { flex: 1; min-width: 0; }
 .compact-game p { font-size: .8rem; color: var(--muted); margin-top: 4px; overflow-wrap: anywhere; }
 .compact-game .button { gap: 2px; padding-inline: 9px; }
@@ -281,7 +284,7 @@ dialog::backdrop { background: #09090cdf; }
   .topbar-inner { min-height: 64px; }
 }
 @media (max-width: 560px) {
-  .hero { min-height: 335px; border-radius: 16px; background-position: 61% center; }
+  .hero { min-height: 335px; border-radius: 16px; background-position: right center; }
   .hero::before { background: linear-gradient(90deg, #110d15f7, #120d16a8 52%, #130d161f 100%), linear-gradient(0deg, #120e17 0%, transparent 60%); }
   .hero h2 { font-size: clamp(3.45rem, 13.8vw, 5.1rem); }
   .hero-description { font-size: .9rem; max-width: 206px; }
@@ -290,6 +293,7 @@ dialog::backdrop { background: #09090cdf; }
   .card-copy { padding: 10px; }
   .game-card { border-radius: 11px; }
   .card-save { top: 4px; right: 4px; }
+  .game-art-square .card-save { top: auto; bottom: 4px; }
   .home-aside { grid-template-columns: minmax(0, 1fr); }
   .card-copy p { font-size: .81rem; }
   .quick-search { width: 44px; padding: 0; }
@@ -299,7 +303,7 @@ dialog::backdrop { background: #09090cdf; }
   .catalog-tools .select-field { max-width: 100%; }
 }
 @media (max-width: 345px) {
-  .compact-game img { width: 38px; height: 38px; }
+  .compact-game img, .compact-game .pulse-cover { width: 38px; height: 38px; }
   .compact-game .button svg { display: none; }
   .brand { gap: 8px; }
   .top-actions { gap: 7px; }
