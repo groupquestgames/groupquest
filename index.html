@@ -192,8 +192,10 @@ let roundLocked = false;
 let feedbackTimer;
 let remaining = 60000;
 let lastTick = 0;
+let round = 0;
 try { best = Number(localStorage.getItem("gq_best")) || 0; } catch {}
 
+const warmupPairs = [["●", "▲"], ["✦", "■"], ["×", "+"]];
 const pairs = [
   ["O", "0"],
   ["B", "8"],
@@ -215,7 +217,8 @@ function updateStats() {
 }
 
 function newRound() {
-  const pair = pairs[Math.floor(Math.random() * pairs.length)];
+  const pool = round++ < 3 ? warmupPairs : pairs;
+  const pair = pool[Math.floor(Math.random() * pool.length)];
   const normal = pair[0];
   const different = pair[1];
 
@@ -286,6 +289,7 @@ function startGame() {
   remaining = 60000;
   lastTick = performance.now();
   targetIndex = -1;
+  round = 0;
   running = true;
 
   $("overlay").classList.add("hidden");

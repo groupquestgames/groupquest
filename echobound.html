@@ -21,7 +21,7 @@
 @media(max-width:350px){.card{flex-basis:137px}.brand strong{font-size:14px;letter-spacing:1.2px}.brand{gap:6px}.mark{width:31px;height:31px}.topright .chapter{max-width:88px}.playerpanel{padding:10px}.enemy{min-height:187px}.enemyname{font-size:12px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 </style>
-</head>
+<link rel="stylesheet" href="groupquest-ui/game-common.css"></head>
 <body>
 <div id="app"></div><div id="toasts" class="toasts" aria-live="polite"></div><div id="modals"></div>
 <script>
@@ -98,7 +98,7 @@ duelist:{name:'Rift Duelist',sym:'⚔',cls:'brute',hp:60,actions:[['hit',12],['p
 seer:{name:'Blind Seer',sym:'✥',cls:'cult',hp:48,actions:[['hex',2],['poison',9],['hit',11]],gold:28},
 warden:{name:'THE WARDEN',sym:'♛',cls:'boss',hp:121,actions:[['hit',13],['guard',13],['charge',23],['hit',14],['power',2]],gold:100,boss:true},
 matriarch:{name:'GLASS MATRIARCH',sym:'❖',cls:'boss',hp:177,actions:[['hit',17],['hex',2],['guard',20],['charge',27],['power',3]],gold:140,boss:true},
-archon:{name:'THE LAST ARCHON',sym:'✦',cls:'boss',hp:231,actions:[['hit',20],['guard',24],['power',3],['hit',22],['charge',32]],gold:200,boss:true},
+archon:{name:'THE LAST ARCHON',sym:'✦',cls:'boss',hp:200,actions:[['hit',19],['guard',22],['power',2],['hit',21],['charge',28]],gold:200,boss:true},
 elite1:{name:'Ash Champion',sym:'⚒',cls:'brute',hp:78,actions:[['hit',13],['guard',16],['charge',23]],gold:58,elite:true},
 elite2:{name:'Warden Shade',sym:'✠',cls:'cult',hp:100,actions:[['hit',16],['hex',2],['charge',25]],gold:64,elite:true},
 elite3:{name:'Cinder Knight',sym:'♛',cls:'brute',hp:132,actions:[['hit',20],['guard',18],['charge',31]],gold:74,elite:true}
@@ -123,19 +123,27 @@ function B(){return state.battle}
 function R(){return state.run}
 function addCard(id,up=false){R().deck.push({id,up,uid:uid()})}
 function gainRelic(id){if(has(id))return;R().relics.push(id);if(id==='hope'){R().maxHp+=14;heal(14)}sfx('chime');note(`Relic acquired: ${RELICS[id].name}`)}
-function newRun(){meta.runs++;const perks=meta.perks;state={version:1,screen:'map',run:{act:1,stage:0,hp:84+perks.hp*4,maxHp:84+perks.hp*4,gold:80+perks.gold*15,relics:[],potions:1+(perks.potion>0?1:0),deck:[],score:0,kills:0,nodesCleared:0,usedPhoenix:false,currentNode:null,history:[],flags:{}},battle:null,shop:null,reward:null,event:null};for(let i=0;i<5;i++)addCard('strike');for(let i=0;i<4;i++)addCard('guard');addCard('focus');addCard('surge');addCard('dash');selection=null;meta.bestAct=Math.max(meta.bestAct,1);save();render();}
+function newRun(){meta.runs++;const perks=meta.perks;state={version:1,screen:'map',run:{act:1,stage:0,hp:90+perks.hp*4,maxHp:90+perks.hp*4,gold:80+perks.gold*15,relics:[],potions:1+(perks.potion>0?1:0),deck:[],score:0,kills:0,nodesCleared:0,usedPhoenix:false,currentNode:null,history:[],flags:{}},battle:null,shop:null,reward:null,event:null};for(let i=0;i<5;i++)addCard('strike');for(let i=0;i<4;i++)addCard('guard');addCard('focus');addCard('surge');addCard('dash');selection=null;meta.bestAct=Math.max(meta.bestAct,1);save();render();}
 function routeOptions(){const stage=R().stage,act=R().act;if(stage===0)return ['battle'];if(stage===1)return ['battle','event'];if(stage===2)return ['battle','elite'];if(stage===3)return ['camp','shop'];if(stage===4)return ['battle','event'];if(stage===5)return ['battle','elite','shop'];return ['boss']}
-const routeInfo={battle:['⚔','Skirmish','An enemy squad. Earn Gold and discover a new card.'],elite:['♛','Elite Hunt','A tougher foe. Win a rare relic and extra Gold.'],event:['✧','Uncharted Event','A risky choice with an unexpected reward.'],camp:['♨','Hearth','Restore health or upgrade a card.'],shop:['◈','Wandering Merchant','Buy cards, healing and powerful relics.'],boss:['✹','Act Guardian','Defeat the guardian to enter the next act.']};
+const routeInfo={battle:['⚔','Skirmish','An enemy squad. Earn Gold and discover a new card.'],elite:['♛','Elite Hunt','A tougher foe. Win a rare relic and extra Gold.'],event:['✧','Uncharted Event','A risky choice with an unexpected reward.'],camp:['♨','Hearth','Restore health or upgrade a card.'],shop:['◈','Wandering Merchant','Buy cards, healing and powerful relics.'],boss:['✹','Act Guardian','Defeat the guardian to enter the next act. If you have no tonics, take one into battle.']};
 function pickEncounter(type){const act=R().act,stage=R().stage;
  if(type==='boss')return [[null,'warden','matriarch','archon'][act]];
  if(type==='elite')return [[null,'elite1','elite2','elite3'][act]];
  if(act===1){return stage===0?['scout']:pick([['scout','wisp'],['knight'],['wisp','scout'],['acolyte']])}
  if(act===2)return pick([['knight','acolyte'],['beast'],['leech','wisp'],['duelist']]);
  return pick([['beast','seer'],['duelist','leech'],['knight','seer'],['beast','duelist']]);}
-function chooseRoute(type){if(!routeOptions().includes(type))return;R().currentNode=type;R().history.push({act:R().act,stage:R().stage,type});selection=null;if(['battle','elite','boss'].includes(type)){startBattle(type)}else if(type==='camp'){state.screen='camp'}else if(type==='shop'){setupShop();state.screen='shop'}else{setupEvent();state.screen='event'}save();render()}
+function chooseRoute(type){if(!routeOptions().includes(type))return;if(type==='boss'&&!R().potions)R().potions=1;
+  R().currentNode=type;R().history.push({act:R().act,stage:R().stage,type});selection=null;if(['battle','elite','boss'].includes(type)){startBattle(type)}else if(type==='camp'){state.screen='camp'}else if(type==='shop'){setupShop();state.screen='shop'}else{setupEvent();state.screen='event'}save();render()}
 function makeEnemy(id,act){const x=FOES[id],scale=x.boss||x.elite?1:1+.15*(act-1);const h=Math.round(x.hp*scale);return {uid:uid(),id,hp:h,maxHp:h,block:0,str:0,weak:0,vuln:0,poison:0,burn:0,turn:0,intent:null};}
 function currentIntent(e){const x=FOES[e.id],i=(e.turn+R().act-1)%x.actions.length;const base=x.actions[i];const mult=x.boss||x.elite?1:1+.1*(R().act-1);return {kind:base[0],amount:Math.round(base[1]*mult), index:i};}
-function startBattle(type){const ids=pickEncounter(type);const b={enemies:ids.map(id=>makeEnemy(id,R().act)),player:{block:0,str:0,weak:0,vuln:0,poison:0,armor:0,thorns:0,tempThorns:0,regen:0,echo:0},energy:3,maxEnergy:3,hand:[],drawPile:shuffle(R().deck.map(c=>({...c}))),discardPile:[],exhaustPile:[],turn:0,attackCount:0,firstDraw:0,lastLog:'Select a card to play. Read enemy intentions first.',firstAttack:false,ended:false};state.battle=b;state.screen='battle';b.enemies.forEach(e=>e.intent=currentIntent(e));for(const id of R().relics){if(RELICS[id]?.apply)RELICS[id].apply(b)}startTurn(true);save()}
+function startBattle(type){const ids=pickEncounter(type);const b={enemies:ids.map(id=>makeEnemy(id,R().act)),player:{block:0,str:0,weak:0,vuln:0,poison:0,armor:0,thorns:0,tempThorns:0,regen:0,echo:0},energy:3,maxEnergy:3,hand:[],drawPile:shuffle(R().deck.map(c=>({...c}))),discardPile:[],exhaustPile:[],turn:0,attackCount:0,firstDraw:0,lastLog:'Select a card to play. Read enemy intentions first.',firstAttack:false,ended:false};if(R().act===1&&R().stage===0){
+  // The tutorial hand offers both an attack and a block.
+  for(const id of ['strike','guard']){
+    const index=b.drawPile.findIndex(card=>card.id===id);
+    if(index>=0)b.drawPile.push(b.drawPile.splice(index,1)[0]);
+  }
+}
+state.battle=b;state.screen='battle';b.enemies.forEach(e=>e.intent=currentIntent(e));for(const id of R().relics){if(RELICS[id]?.apply)RELICS[id].apply(b)}startTurn(true);save()}
 function draw(n){const b=B();if(!b)return;for(let i=0;i<n&&b.hand.length<10;i++){if(b.drawPile.length===0){if(!b.discardPile.length)break;b.drawPile=shuffle(b.discardPile);b.discardPile=[];}b.hand.push(b.drawPile.pop())}}
 function block(n){const b=B();b.player.block=Math.max(0,b.player.block+Math.max(0,Math.floor(n)));}
 function heal(n){const r=R();if(!r)return;const before=r.hp;r.hp=clamp(r.hp+Math.max(0,Math.floor(n)),0,r.maxHp);return r.hp-before}
@@ -171,7 +179,7 @@ function endTurn(){if(state.screen!=='battle')return;const b=B();b.discardPile.p
  startTurn();sfx('turn');save();render(true);
 }
 function potion(){if(state.screen!=='battle'||R().potions<=0)return;R().potions--;const gained=heal(19);B().lastLog=`Drank healing tonic: +${gained} HP.`;note(`Restored ${gained} HP`);sfx('chime');save();render(true)}
-function winBattle(){const b=B(),r=R(),type=r.currentNode;const base=type==='boss'?85:type==='elite'?52:rand(24,33);const gold=Math.ceil(base*(has('coin')?1.3:1));r.gold+=gold;r.score+=Math.round(100+(b.turn<=4?40:0)+(type==='elite'?180:0)+(type==='boss'?450:0));const recovered=heal(type==='boss'?16:type==='elite'?10:7)+(has('blessing')?heal(5):0);if(Math.random()<.28&&r.potions<3)r.potions++;r.nodesCleared++;meta.rooms++;const rareChance=type==='elite'||type==='boss'?.28:.09;
+function winBattle(){const b=B(),r=R(),type=r.currentNode;const base=type==='boss'?85:type==='elite'?52:rand(24,33);const gold=Math.ceil(base*(has('coin')?1.3:1));r.gold+=gold;r.score+=Math.round(100+(b.turn<=4?40:0)+(type==='elite'?180:0)+(type==='boss'?450:0));const recovered=heal(type==='boss'?20:type==='elite'?12:9)+(has('blessing')?heal(5):0);if(Math.random()<.28&&r.potions<3)r.potions++;r.nodesCleared++;meta.rooms++;const rareChance=type==='elite'||type==='boss'?.28:.09;
  if(type==='boss'){state.reward={type, gold, recovered, cards:[], relics:offerRelics(3), turn:b.turn, hp:r.hp};state.screen='relicReward'}
  else{const count=has('map')?4:3;state.reward={type,gold,recovered,cards:offerCards(count,rareChance),relics:type==='elite'?offerRelics(3):[],turn:b.turn,hp:r.hp,selectedCard:false};state.screen='reward'}
  state.battle=null;selection=null;save();render();sfx('win');}
@@ -182,7 +190,7 @@ function acceptCard(id){if(state.screen!=='reward'||!state.reward.cards.includes
 function skipCard(){if(state.screen!=='reward')return;R().gold+=12;finishReward()}
 function finishReward(){if(state.reward.relics.length){state.reward.selectedCard=true;state.screen='relicReward'}else{state.reward=null;completeNode()}save();render();}
 function acceptRelic(id){if(state.screen!=='relicReward'||!state.reward?.relics.includes(id))return;gainRelic(id);state.reward=null;completeNode();}
-function completeNode(){const r=R();if(!r)return;r.currentNode=null;r.stage++;if(r.stage>=NODES){r.stage=0;r.act++;if(r.act>MAX_ACT){victory();return}meta.bestAct=Math.max(meta.bestAct,r.act);const extra=12;heal(extra);note(`Act ${r.act} unlocked · +${extra} HP`)}state.shop=null;state.event=null;state.screen='map';save();render()}
+function completeNode(){const r=R();if(!r)return;r.currentNode=null;r.stage++;if(r.stage>=NODES){r.stage=0;r.act++;if(r.act>MAX_ACT){victory();return}meta.bestAct=Math.max(meta.bestAct,r.act);const extra=18;heal(extra);note(`Act ${r.act} unlocked · +${extra} HP`)}state.shop=null;state.event=null;state.screen='map';save();render()}
 function defeat(){state.screen='defeat';meta.bestAct=Math.max(meta.bestAct,R().act);const gain=Math.max(4,Math.floor(R().score/140)+2*R().act);meta.sigils+=gain;R().earnedSigils=gain;state.battle=null;save();render()}
 function victory(){state.screen='victory';meta.wins++;meta.bestAct=3;const gain=25+Math.floor(R().score/100);meta.sigils+=gain;R().earnedSigils=gain;save();render();sfx('win')}
 function setupShop(){const r=R();state.shop={cards:offerCards(3,.24).map((id,i)=>({id,price:50+i*11,bought:false})),relics:offerRelics(2).map((id,i)=>({id,price:115+20*i,bought:false})),healing:{price:35,bought:false}}}

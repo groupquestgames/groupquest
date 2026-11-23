@@ -14,7 +14,7 @@ export const T = {
   moves: 'Moves', buoys: 'Buoys', target: 'Gold at', stars: 'Campaign stars', chartsCleared: 'Charts cleared',
   voyage: 'Campaign', route: 'Course notes', tutorial: 'First voyage', chart: 'Chart', logEmpty: 'Your first medals and unlocks appear here.',
   aim: 'Tow the lantern over every buoy, then pull it onto the dock.',
-  steer: 'Tap an adjacent tile, swipe, or use the arrow keys.',
+  steer: 'Tap a nearby tile, swipe, or steer with the arrow keys. Press Z to undo.',
   allLit: 'All buoys lit. Pull the lantern onto the dock.',
   firstMove: 'Tap the marked buoy to steer the skiff.',
   firstBuoy: 'Move off the buoy. The lantern follows one tile behind and lights it.',

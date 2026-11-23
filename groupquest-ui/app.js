@@ -305,6 +305,7 @@ function loadFrame(game) {
   frame.title = game.title;
   frame.allow = 'fullscreen';
   const url = new URL(game.file, location.href);
+  url.searchParams.set('v', 'game-quality-1');
   $('direct-game').href = url.href;
   setPlayerStatus('loading');
   const showError = () => {

@@ -491,6 +491,11 @@ document.addEventListener('keydown', event => {
     event.preventDefault();
     if (!event.repeat) { audio.unlock(); steer(direction); }
   }
+  if (event.repeat) return;
+  if (event.key.toLowerCase() === 'z') {
+    event.preventDefault();
+    undo();
+  }
   if (event.key === 'Escape') pause();
 });
 board.addEventListener('pointerdown', event => {
